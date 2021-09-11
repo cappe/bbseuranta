@@ -15,6 +15,8 @@ class UsersController < ApplicationController
     user = User.new(user_params)
 
     if user.save
+      Initial.with(lang: :fi).deliver(user)
+
       render json: { data: user }
     else
       head :bad_request
