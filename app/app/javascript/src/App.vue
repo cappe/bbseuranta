@@ -11,6 +11,12 @@
         </div>
 
         <button
+            @click="onNotify"
+        >
+          Vinkkaa muille
+        </button>
+
+        <button
             @click="unsubscribe"
         >
           Disable Webpush
@@ -59,6 +65,7 @@ export default {
     ...mapActions({
       subscribeToPushNotifications: 'sw/subscribeToPushNotifications',
       unsubscribePushNotification: 'sw/unsubscribePushNotification',
+      notify: 'notifications/notify',
     }),
 
     subscribe() {
@@ -67,7 +74,11 @@ export default {
 
     unsubscribe() {
       this.unsubscribePushNotification();
-    }
+    },
+
+    onNotify() {
+      this.notify();
+    },
   },
 }
 </script>

@@ -8,6 +8,7 @@ Rails.application.routes.draw do
   get 'find_by_endpoint', to: 'users#show'
 
   resources :users, only: [:create, :destroy]
+  resources :notifications, only: [:create]
 
   mount Sidekiq::Web => '/sidekiq'
 end
