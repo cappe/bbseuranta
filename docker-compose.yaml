@@ -20,8 +20,6 @@ services:
     tty: true
     volumes:
       - ./app:/app
-    ports:
-      - "3000:3000"
     environment:
       POSTGRES_PASSWORD: password
       REDIS_URL: redis://redis:6379/12
@@ -48,6 +46,17 @@ services:
     depends_on:
       - db
       - redis
+
+  nginx:
+    image: nginx:alpine
+    volumes:
+      - ./nginx/certs:/etc/usr/nginx/certs
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf
+    ports:
+      - 3000:3000
+    depends_on:
+      - web
+      - sidekiq
 
 volumes:
   db_data: {}
