@@ -41,6 +41,11 @@ class UsersController < ApplicationController
   private
 
     def user_params
-      params.require(:user).permit(:endpoint)
+      params.require(:user).permit(
+        :endpoint,
+        :auth,
+        :p256dh,
+        :expiration_time
+      )
     end
 end

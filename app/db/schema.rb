@@ -30,6 +30,9 @@ ActiveRecord::Schema.define(version: 2021_09_11_113852) do
 
   create_table "users", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
     t.string "endpoint", null: false
+    t.string "auth", null: false
+    t.string "p256dh", null: false
+    t.string "expiration_time"
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
     t.index ["endpoint"], name: "index_users_on_endpoint", unique: true
