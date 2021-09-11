@@ -50,9 +50,10 @@ const actions = {
      * @param subscription
      * @returns {Promise<boolean>}
      */
-    async validateSubscription(ctx, { subscription }) {
+    async validateSubscription({ commit }, { subscription }) {
         try {
-            await api.get(`validate_push_subscription?endpoint=${subscription.endpoint}`);
+            const r = await api.get(`find_by_endpoint?endpoint=${subscription.endpoint}`);
+            commit('SET_CURRENT_USER', r);
             return true;
         } catch (e) {
             if (e.httpStatus === 404) {
@@ -174,7 +175,7 @@ const actions = {
         let success = false;
 
         try {
-            const r = await api.post('create', payload);
+            const r = await api.post('users', payload);
             commit('SET_CURRENT_USER', r);
             success = true;
         } catch (e) {}
@@ -186,14 +187,14 @@ const actions = {
      * @returns {Promise<boolean>}
      */
     async destroyUser({ commit, getters: allGetters }, { subscription }) {
-        const { endpoint } = allGetters.currentUser;
+        const { id, endpoint } = allGetters.currentUser;
 
         if (endpoint !== subscription.endpoint) return true;
 
         let success = false;
 
         try {
-            await api.delete(endpoint);
+            await api.delete(`users/${id}?endpoint=${endpoint}`);
             commit('DESTROY_CURRENT_USER');
             success = true;
         } catch (e) {}

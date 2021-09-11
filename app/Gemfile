@@ -35,6 +35,7 @@ gem 'httparty'
 gem 'noticed'
 gem 'serviceworker-rails'
 gem 'rack-cors'
+gem 'webpush'
 
 group :development, :test do
   # Call 'byebug' anywhere in the code to stop execution and get a debugger console
