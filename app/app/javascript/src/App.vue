@@ -10,17 +10,25 @@
         >
       </div>
 
-      <h1>
+      <h1
+        style="margin-bottom: 0; letter-spacing: 4px;"
+      >
         BB 24/7 seuranta
       </h1>
 
+      <h2
+        style="margin-top: 4px;"
+      >
+        Kun haluat nähdä ne mehukkaimmat hetket livenä.
+      </h2>
+
       <div
-        style="text-align: center; margin: 24px 0;"
+        style="text-align: center; margin: 36px 0 24px;"
       >
         Tila:
         <span
           :style="{
-            color: hasActiveSubscription ? 'teal' : 'initial',
+            color: hasActiveSubscription ? 'teal' : 'deep-orange',
           }"
         >
           {{ hasActiveSubscription ? 'Ilmoitukset käytössä ✓' : 'Ilmoitukset ei käytössä' }}
@@ -39,11 +47,13 @@
           </div>
         </div>
 
+        <hr>
+
         <div
             class="feature"
         >
           <div>
-            Vinkkaa muille, kun talossa tapahtuu.
+            Vinkkaa muita, kun talossa tapahtuu.
           </div>
         </div>
       </div>
@@ -93,11 +103,11 @@
           <div
               style="text-align: center;"
           >
-            <h2
+            <h3
                 style="margin-top: 0; margin-bottom: 12px;"
             >
               Aiemmat ilmoitukset
-            </h2>
+            </h3>
 
             <div
                 style="font-size: 12px; margin-bottom: 20px;"
@@ -108,52 +118,63 @@
             <div
                 class="notifications"
             >
-              <div
-                  v-for="(notification, i) in notifications"
-                  :key="i"
-                  class="notification"
-                  :class="{
+              <template
+                  v-if="notifications.length > 0"
+              >
+                <div
+                    v-for="(notification, i) in notifications"
+                    :key="i"
+                    class="notification"
+                    :class="{
                     notification: true,
                     unread: notification.read_at === null
                   }"
+                >
+                  <table>
+                    <tbody>
+                    <tr>
+                      <th
+                          style="text-align: left;"
+                      >
+                        Vinkki lähetetty
+                      </th>
+
+                      <td
+                          style="padding-left: 16px;"
+                      >
+                        {{ formatDateTime(notification.created_at) }}
+                      </td>
+                    </tr>
+
+                    <tr>
+                      <th
+                          style="text-align: left;"
+                      >
+                        Nähnyt
+                      </th>
+
+                      <td
+                          style="padding-left: 16px;"
+                      >
+                        {{ formatDateTime(notification.read_at) || '—' }}
+                      </td>
+                    </tr>
+                    </tbody>
+                  </table>
+                </div>
+              </template>
+
+              <div
+                v-else
+                style="font-style: italic;"
               >
-                <table>
-                  <tbody>
-                  <tr>
-                    <th
-                        style="text-align: left;"
-                    >
-                      Vinkki lähetetty
-                    </th>
-
-                    <td
-                        style="padding-left: 16px;"
-                    >
-                      {{ formatDateTime(notification.created_at) }}
-                    </td>
-                  </tr>
-
-                  <tr>
-                    <th
-                        style="text-align: left;"
-                    >
-                      Nähnyt
-                    </th>
-
-                    <td
-                        style="padding-left: 16px;"
-                    >
-                      {{ formatDateTime(notification.read_at) || '—' }}
-                    </td>
-                  </tr>
-                  </tbody>
-                </table>
+                Ei ilmoituksia.
               </div>
             </div>
           </div>
 
           <hr
-              style="margin: 28px 0 48px;"
+              style="margin: 48px 0;"
           >
 
           <div
@@ -181,7 +202,9 @@
             Aktivoi ilmoitukset
           </button>
 
-          <div>
+          <div
+            style="font-size: 12px;"
+          >
             Selain kysyy sinulta vielä vahvistusta.
           </div>
         </div>
@@ -267,21 +290,29 @@ h1 {
 }
 
 h2 {
+  font-size: 16px;
+  text-align: center;
+  letter-spacing: 2px;
+  color: #000000bf;
+}
+
+h3 {
   margin-top: 12px;
   color: #2E2F30;
 }
 
 .features {
+  max-width: 400px;
   display: flex;
-  margin: 24px 0;
+  margin: 32px auto;
   color: #2E2F30;
 }
 
 .feature {
   text-align: center;
   margin: 0 auto;
-  font-size: 20px;
-  padding: 12px;
+  font-size: 16px;
+  padding: 8px;
 }
 
 button.btn-large {
