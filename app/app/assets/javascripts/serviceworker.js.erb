@@ -1,5 +1,177 @@
-function onInstall(event) {
+const defaultWebPushOptions = {
+    // Visual settings
+    badge: '/web-push/badge.png',
+    icon: '/web-push/badge.png',
+
+    // Behavioral settings
+    vibrate: [150, 150, 300], // Deprecated from Android O
+    requireInteraction: true,
+
+    // Misc
+    actions: [],
+};
+
+const eventOptions = {
+    EPISODE_NOTIFICATION: {
+        ...defaultWebPushOptions,
+
+        actions: [
+            {
+                action: 'OPEN_CAMERA_1',
+                title: 'Kamera 1 (ruutu.fi)',
+            },
+            {
+                action: 'OPEN_CAMERA_2',
+                title: 'Kamera 2 (ruutu.fi)',
+            },
+            {
+                action: 'MANAGE_NOTIFICATIONS',
+                title: 'Hallitse ilmoituksia',
+            },
+        ],
+    },
+
+//    INITIAL: {
+//        ...defaultWebPushOptions,
+//    },
+};
+
+const onInstall = (event) => {
     self.skipWaiting();
 }
 
+/**
+ * Opens external webpage
+ */
+const openExternalPage = async (path) => {
+    const targetUrl = new URL(path, self.location.origin).href;
+    await clients.openWindow(targetUrl);
+};
+
+/**
+ * Opens internal webpage
+ */
+const openInternalPage = async (path) => {
+    const targetUrl = new URL(path, self.location.origin).href;
+
+    const windowClients = await clients.matchAll({
+        type: 'window',
+        includeUncontrolled: true,
+    });
+
+    let matchingClient = null;
+
+    /**
+     * Attempt to find a matching client with the target URL already opened
+     */
+    for (let i = 0; i < windowClients.length; i += 1) {
+        const windowClient = windowClients[i];
+
+        if (windowClient.url === targetUrl) {
+            matchingClient = windowClient;
+            break;
+        }
+    }
+
+    /**
+     * If a matching URL was not found, attempt to find any open client
+     */
+    if (!matchingClient && windowClients.length > 0) {
+        matchingClient = windowClients[0]; // eslint-disable-line
+    }
+
+    /**
+     * If no clients was found, open a new page
+     */
+    if (!matchingClient) {
+        await clients.openWindow(targetUrl);
+        return;
+    }
+
+    /**
+     * Otherwise, navigate to the target URL and focus
+     */
+    const client = await matchingClient.navigate(targetUrl);
+    await client.focus();
+};
+
+/**
+ * Handles incoming webpush messages
+ */
+const onPush = (event) => {
+    if (!event.data) return;
+
+    const {
+        body,
+        data,
+        title,
+    } = event.data.json();
+
+    const options = {
+        ...eventOptions[data.event_name],
+        body,
+        data,
+    };
+
+    const promiseChain = Promise.all([
+        self.registration.showNotification(title, options),
+    ]);
+    event.waitUntil(promiseChain);
+}
+
+/**
+ * Handles Web Push notification clicks
+ */
+const onNotificationClick = (event) => {
+    const {
+        notification,
+        action,
+    } = event;
+
+    const promises = [];
+
+    /**
+     * If action is missing, check event_name. This way we can define
+     * default action on notification click for notifications that
+     * don't have explicit actions attributes.
+     */
+    const eventName = action || notification.data.event_name;
+    switch (eventName) { // eslint-disable-line
+        case 'OPEN_CAMERA_1': {
+            const {
+                link_to_camera_1,
+            } = notification.data;
+
+            promises.push(openExternalPage(link_to_camera_1));
+
+            break;
+        }
+
+        case 'OPEN_CAMERA_2': {
+            const {
+                link_to_camera_2,
+            } = notification.data;
+
+            promises.push(openExternalPage(link_to_camera_2));
+
+            break;
+        }
+
+        case 'MANAGE_NOTIFICATIONS': {
+            promises.push(openInternalPage('/'));
+
+            break;
+        }
+
+        default: {}
+    }
+
+    const promiseChain = Promise.all(promises);
+    event.waitUntil(promiseChain);
+
+    notification.close();
+};
+
 self.addEventListener('install', onInstall);
+self.addEventListener('push', onPush);
+self.addEventListener('notificationclick', onNotificationClick);
