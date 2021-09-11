@@ -1,6 +1,6 @@
 import Vue from 'vue/dist/vue.esm'
-import App from '../app/App'
-import "../serviceworker-companion"
+import App from '../src/App'
+import "../register-sw"
 
 document.addEventListener('DOMContentLoaded', () => {
   new Vue({
