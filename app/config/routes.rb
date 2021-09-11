@@ -10,5 +10,9 @@ Rails.application.routes.draw do
   resources :users, only: [:create, :destroy]
   resources :notifications, only: [:create]
 
+  namespace :notifications do
+    patch :batch_update, to: 'batch_update'
+  end
+
   mount Sidekiq::Web => '/sidekiq'
 end

@@ -3,5 +3,7 @@ class User < ApplicationRecord
             presence: true,
             uniqueness: true
 
-  has_many :notifications, as: :recipient
+  has_many :notifications,
+           -> { newest_first },
+           as: :recipient
 end

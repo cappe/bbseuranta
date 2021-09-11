@@ -6,6 +6,7 @@ const initialState = () => ({
     permission: null,
     reg: null,
     currentUser: null,
+    notifications: [],
 });
 
 const supportsNotifications = () => 'Notification' in window;
@@ -18,6 +19,7 @@ const getters = {
     reg: s => s.reg,
     supportsWebPush: s => supportsWebPush() && !!s.reg,
     currentUser: s => s.currentUser,
+    notifications: s => s.notifications,
 };
 
 const actions = {
@@ -217,11 +219,13 @@ const mutations = {
     },
 
     SET_CURRENT_USER(state, { data }) {
-        Vue.set(state, 'currentUser', data);
+        Vue.set(state, 'currentUser', data.user);
+        Vue.set(state, 'notifications', data.notifications);
     },
 
     DESTROY_CURRENT_USER(state) {
         Vue.set(state, 'currentUser', null);
+        Vue.set(state, 'notifications', []);
     }
 };
 

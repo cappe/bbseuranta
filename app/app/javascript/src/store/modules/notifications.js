@@ -6,6 +6,12 @@ const actions = {
             await api.post('notifications');
         } catch (e) {}
     },
+
+    async readAll(ctx, notificationIds) {
+        try {
+            await api.update('notifications/batch_update', notificationIds);
+        } catch (e) {}
+    }
 };
 
 export default {

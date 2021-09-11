@@ -21,6 +21,28 @@
         >
           Disable Webpush
         </button>
+
+        <div>
+          <div>
+            Notifications
+          </div>
+
+          <div>
+            <div
+              v-for="(notification, i) in notifications"
+              :key="i"
+            >
+              <div>
+                Vinkki annettu
+                {{ formatDateTime(notification.created_at) }}
+              </div>
+
+              <div>
+                Luettu: {{ formatDateTime(notification.read_at) }}
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
 
       <div
@@ -58,7 +80,16 @@ export default {
     ...mapGetters({
       supportsWebPush: 'sw/supportsWebPush',
       hasActiveSubscription: 'sw/hasActiveSubscription',
+      notifications: 'sw/notifications',
     }),
+  },
+
+  watch: {
+    notifications(notifications, prevNotifications) {
+      if (notifications === prevNotifications) return;
+      const notification_ids = notifications.map(n => n.id);
+      this.readAll({ notification_ids });
+    },
   },
   
   methods: {
@@ -66,6 +97,7 @@ export default {
       subscribeToPushNotifications: 'sw/subscribeToPushNotifications',
       unsubscribePushNotification: 'sw/unsubscribePushNotification',
       notify: 'notifications/notify',
+      readAll: 'notifications/readAll',
     }),
 
     subscribe() {
@@ -79,6 +111,14 @@ export default {
     onNotify() {
       this.notify();
     },
+
+    formatDateTime(timestamp) {
+      if (!timestamp) return null;
+      let date = new Date(timestamp).toLocaleString();
+      date = date.replace(/\,/g, '');
+      date = date.replace(/\//g, '.');
+      return date;
+    }
   },
 }
 </script>

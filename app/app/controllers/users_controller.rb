@@ -2,10 +2,12 @@ class UsersController < ApplicationController
   protect_from_forgery with: :null_session
 
   def show
-    user = User.find_by_endpoint(params[:endpoint])
+    user = User
+             .includes(:notifications)
+             .find_by_endpoint(params[:endpoint])
 
     if user
-      render json: { data: user }
+      render json: { data: { user: user, notifications: user.notifications } }
     else
       head :not_found
     end
@@ -17,7 +19,7 @@ class UsersController < ApplicationController
     if user.save
       Initial.with(lang: :fi).deliver(user)
 
-      render json: { data: user }
+      render json: { data: { user: user, notifications: [] } }
     else
       head :bad_request
     end

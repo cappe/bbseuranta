@@ -8,4 +8,13 @@ class NotificationsController < ApplicationController
 
     head :no_content
   end
+
+  def batch_update
+    Notification
+      .unread
+      .where(id: params[:notification_ids])
+      .each(&:mark_as_read!)
+
+    head :no_content
+  end
 end
