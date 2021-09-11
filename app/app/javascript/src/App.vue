@@ -1,30 +1,73 @@
 <template>
   <div id="app">
+    <h1>
+      BB 24/7 seuranta
+    </h1>
+
+    <p>
+      Seuraatko BB 24/7:aa? Etkö näe sieltä koskaan mitään mehukasta katsottavaa?
+    </p>
+
+    <p>
+      Ei hätää, ratkaisu on tässä:
+    </p>
+
+    <ol>
+      <li>
+        Ota ilmoitukset käyttöön
+      </li>
+
+      <li>
+        Saa ilmoitus, kun toinen katsoja vinkkaa mehukkaasta sisällöstä
+      </li>
+
+      <li>
+        Vinkkaa muille, kun näet mielenkiintoista katsottavaa
+      </li>
+    </ol>
+
     <div
       v-if="supportsWebPush"
     >
+      <div>
+        Tila: {{ hasActiveSubscription ? 'Ilmoitukset käytössä' : 'Ilmoitukset ei käytössä' }}
+      </div>
+
       <div
         v-if="hasActiveSubscription"
       >
         <div>
-          Has active push subscription
+          <div>
+            Kun näet BB 24/7:sta mielenkiintoista katsottavaa, vinkkaa siitä
+            muille seuraajille klikkaamalla tätä painiketta:
+          </div>
+
+          <button
+              @click="onNotify"
+          >
+            Vinkkaa mehukkaasta sisällöstä
+          </button>
+
+          <div>
+            Huomaathan, että vastuu on suuri. Käytä sitä harkiten.
+          </div>
         </div>
-
-        <button
-            @click="onNotify"
-        >
-          Vinkkaa muille
-        </button>
-
-        <button
-            @click="unsubscribe"
-        >
-          Disable Webpush
-        </button>
 
         <div>
           <div>
-            Notifications
+            Voit ottaa push-ilmoitukset pois käytöstä tällä painikkeella:
+          </div>
+
+          <button
+              @click="unsubscribe"
+          >
+            Poista push-ilmoitukset käytöstä
+          </button>
+        </div>
+
+        <div>
+          <div>
+            Aiemmat ilmoitukset (uusin ensin)
           </div>
 
           <div>
@@ -33,12 +76,11 @@
               :key="i"
             >
               <div>
-                Vinkki annettu
-                {{ formatDateTime(notification.created_at) }}
+                Vinkki annettu {{ formatDateTime(notification.created_at) }}
               </div>
 
               <div>
-                Luettu: {{ formatDateTime(notification.read_at) }}
+                Nähty: {{ formatDateTime(notification.read_at) }}
               </div>
             </div>
           </div>
@@ -48,15 +90,15 @@
       <div
         v-else
       >
-        <div>
-          Has not active push subscription
-        </div>
-
         <button
             @click="subscribe"
         >
-          Enable Webpush
+          Aktivoi push-ilmoitukset
         </button>
+
+        <div>
+          Selain kysyy sinulta vielä vahvistusta.
+        </div>
       </div>
     </div>
 
@@ -87,11 +129,16 @@ export default {
   watch: {
     notifications(notifications, prevNotifications) {
       if (notifications === prevNotifications) return;
-      const notification_ids = notifications.map(n => n.id);
+      const notification_ids = notifications
+          .filter(n => n.read_at === null)
+          .map(n => n.id);
+
+      if (notification_ids.length <= 0) return;
+
       this.readAll({ notification_ids });
     },
   },
-  
+
   methods: {
     ...mapActions({
       subscribeToPushNotifications: 'sw/subscribeToPushNotifications',
