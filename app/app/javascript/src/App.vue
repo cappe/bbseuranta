@@ -68,18 +68,16 @@
           </div>
         </div>
 
+        <!-- notify button -->
         <div
-            v-if="supportsWebPush || hasActiveChannel"
+            v-if="showNotifyButton"
+            style="padding-bottom: 28px;"
         >
           <div
-              v-if="hasActiveChannel"
-              style="padding-bottom: 28px;"
+              style="text-align: center; margin-top: 28px;"
           >
-            <div
-                style="text-align: center; margin-top: 28px;"
-            >
-              <p
-                  style="
+            <p
+                style="
                 text-transform: uppercase;
                 font-size: 14px;
                 font-weight: bold;
@@ -87,147 +85,157 @@
                 max-width: 200px;
                 margin: 0 auto;
               "
-              >
-                Tapahtuuko BB:ssä? Vinkkaa siitä muille:
-              </p>
+            >
+              Tapahtuuko BB:ssä? Vinkkaa siitä muille:
+            </p>
 
-              <button
-                  @click="onNotify"
-                  class="btn-large"
-                  :class="{
+            <button
+                @click="onNotify"
+                class="btn-large"
+                :class="{
                     disabled: notified
                   }"
-                  style="margin: 24px 0; cursor: pointer;"
-              >
-                 {{ notified ? 'Ilmoitus lähetetty, fanit kiittää!' : 'Lähetä ilmoitus' }}
-              </button>
-
-              <div
-                  style="max-width: 200px; margin: 0 auto;"
-              >
-                Järjestelmässä on spämmiesto, joten käytäthän tätä harkiten.
-              </div>
-            </div>
-
-            <hr
-                style="margin: 48px 0;"
+                style="margin: 24px 0; cursor: pointer;"
             >
-
-            <div
-                style="text-align: center;"
-            >
-              <h3
-                  style="margin-top: 0; margin-bottom: 12px;"
-              >
-                Aiemmat ilmoitukset
-              </h3>
-
-              <div
-                  style="font-size: 12px; margin-bottom: 20px;"
-              >
-                (uusin ensin)
-              </div>
-
-              <div
-                  class="notifications"
-              >
-                <template
-                    v-if="notifications.length > 0"
-                >
-                  <div
-                      v-for="(notification, i) in notifications"
-                      :key="i"
-                      class="notification"
-                      :class="{
-                    notification: true,
-                    unread: notification.read_at === null
-                  }"
-                  >
-                    <table>
-                      <tbody>
-                      <tr>
-                        <th
-                            style="text-align: left;"
-                        >
-                          Vinkki lähetetty
-                        </th>
-
-                        <td
-                            style="padding-left: 16px;"
-                        >
-                          {{ formatDateTime(notification.created_at) }}
-                        </td>
-                      </tr>
-
-                      <tr>
-                        <th
-                            style="text-align: left;"
-                        >
-                          Nähnyt
-                        </th>
-
-                        <td
-                            style="padding-left: 16px;"
-                        >
-                          {{ formatDateTime(notification.read_at) || '—' }}
-                        </td>
-                      </tr>
-                      </tbody>
-                    </table>
-                  </div>
-                </template>
-
-                <div
-                    v-else
-                    style="font-style: italic;"
-                >
-                  Ei ilmoituksia.
-                </div>
-              </div>
-            </div>
-
-            <hr
-                style="margin: 48px 0;"
-            >
-
-            <div
-                style="text-align: center; margin: 24px 0;"
-            >
-              <button
-                  @click="unsubscribe"
-                  class="btn-text"
-                  style="color: red; cursor: pointer;"
-              >
-                Poista ilmoitukset käytöstä
-              </button>
-            </div>
-          </div>
-
-          <div
-              v-else
-              style="text-align: center;"
-          >
-            <button
-                @click="subscribe"
-                class="btn-large"
-                style="margin-bottom: 16px; cursor: pointer;"
-            >
-              Aktivoi ilmoitukset
+              {{ notified ? 'Ilmoitus lähetetty, fanit kiittää!' : 'Lähetä ilmoitus' }}
             </button>
 
             <div
-                style="font-size: 12px;"
+                style="max-width: 200px; margin: 0 auto;"
             >
-              Selain kysyy sinulta vielä vahvistusta.
+              Järjestelmässä on spämmiesto, joten käytäthän tätä harkiten.
             </div>
+          </div>
+
+          <hr
+              style="margin: 48px 0;"
+          >
+
+          <div
+              style="text-align: center;"
+          >
+            <h3
+                style="margin-top: 0; margin-bottom: 12px;"
+            >
+              Aiemmat ilmoitukset
+            </h3>
+
+            <div
+                style="font-size: 12px; margin-bottom: 20px;"
+            >
+              (uusin ensin)
+            </div>
+
+            <div
+                class="notifications"
+            >
+              <template
+                  v-if="notifications.length > 0"
+              >
+                <div
+                    v-for="(notification, i) in notifications"
+                    :key="i"
+                    class="notification"
+                    :class="{
+                    notification: true,
+                    unread: notification.read_at === null
+                  }"
+                >
+                  <table>
+                    <tbody>
+                    <tr>
+                      <th
+                          style="text-align: left;"
+                      >
+                        Vinkki lähetetty
+                      </th>
+
+                      <td
+                          style="padding-left: 16px;"
+                      >
+                        {{ formatDateTime(notification.created_at) }}
+                      </td>
+                    </tr>
+
+                    <tr>
+                      <th
+                          style="text-align: left;"
+                      >
+                        Nähnyt
+                      </th>
+
+                      <td
+                          style="padding-left: 16px;"
+                      >
+                        {{ formatDateTime(notification.read_at) || '—' }}
+                      </td>
+                    </tr>
+                    </tbody>
+                  </table>
+                </div>
+              </template>
+
+              <div
+                  v-else
+                  style="font-style: italic;"
+              >
+                Ei ilmoituksia.
+              </div>
+            </div>
+          </div>
+
+          <hr
+              style="margin: 48px 0;"
+          >
+
+          <div
+              style="text-align: center; margin: 24px 0;"
+          >
+            <button
+                @click="unsubscribe"
+                class="btn-text"
+                style="color: red; cursor: pointer;"
+            >
+              Poista ilmoitukset käytöstä
+            </button>
           </div>
         </div>
 
+        <!-- webpush subscription -->
         <div
-            v-if="!hasActiveChannel && !supportsWebPush"
+            v-else-if="showSubscriptionButton"
+            style="text-align: center;"
+        >
+          <button
+              @click="subscribe"
+              class="btn-large"
+              style="margin-bottom: 16px; cursor: pointer;"
+          >
+            Aktivoi ilmoitukset
+          </button>
+
+          <div
+              style="font-size: 12px;"
+          >
+            Selain kysyy sinulta vielä vahvistusta.
+          </div>
+        </div>
+
+        <!-- email subscription / error messages -->
+        <div
+            v-else-if="showAltSubscriptionMethod"
             style="text-align: center;"
         >
           <div
+              v-if="notificationsBlocked"
+              style="color: red; margin: 0 auto 24px; max-width: 300px;"
+          >
+            Ilmoitukset estetty. Nollaa selaimen osoiterivin
+            lukosta avautuvasta valikosta.
+          </div>
+
+          <div
+              v-else-if="!supportsWebPush"
               style="color: red; margin-bottom: 24px;"
           >
             Valitettavasti laitteesi tai selaimesi ei tue push-ilmoituksia.
@@ -296,10 +304,28 @@ export default {
       hasActiveEmail: 'sw/hasActiveEmail',
       notifications: 'sw/notifications',
       currentUser: 'sw/currentUser',
+      permission: 'sw/permission',
     }),
 
     hasActiveChannel() {
       return this.hasActiveSubscription || this.hasActiveEmail;
+    },
+
+    showNotifyButton() {
+      return this.supportsWebPush && this.hasActiveChannel && this.permission === 'granted';
+    },
+
+    showSubscriptionButton() {
+      return this.supportsWebPush && !this.hasActiveChannel && ['granted', 'prompt'].includes(this.permission);
+    },
+
+    showAltSubscriptionMethod() {
+      return !this.supportsWebPush ||
+                (this.supportsWebPush && this.notificationsBlocked);
+    },
+
+    notificationsBlocked() {
+      return ['default', 'denied'].includes(this.permission);
     },
   },
 
@@ -344,7 +370,10 @@ export default {
 
     async subscribe() {
       const subscription = await this.subscribeToPushNotifications();
-      await this.saveUser(subscription);
+      if (!subscription) return;
+      const success = await this.saveUser(subscription);
+
+      if (!success) return;
 
       if (this.hasActiveSubscription) {
         window.fathom.trackGoal('BWB7HYCE', 0); // Subscribe to Webpush
@@ -405,6 +434,7 @@ export default {
       const success = await this.createUser(payload);
       if (success) this.addUserId();
       this.email = null;
+      return success;
     },
 
     userId() {

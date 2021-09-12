@@ -119,7 +119,7 @@ const actions = {
      * @returns {Promise<null|"default"|"denied"|"granted">}
      */
     async requestPermission({ commit }) {
-        if (!supportsNotifications) return null;
+        if (!supportsNotifications()) return null;
 
         const permission = await Notification.requestPermission();
         commit('SET_PERMISSION', permission);
