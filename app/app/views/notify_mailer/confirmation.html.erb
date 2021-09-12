@@ -13,7 +13,10 @@
   <div>
     Ystävällisin terveisin,
     <br>
-    bbseuranta.fi
+    <a
+      href="<%= @user_link %>"
+      target="_blank"
+    >bbseuranta.fi</a>
   </div>
 
   <div
@@ -21,7 +24,7 @@
   >
     Ps. Muistathan myös itse
     <a
-      href="https://bbseuranta.fi?id=<%= @recipient.id %>"
+      href="<%= @user_link %>"
       target="_blank"
     >vinkata</a>, jos näet jotain mehukasta katsottavaa!
   </div>
@@ -38,7 +41,7 @@
 
     <p>
       Olet pyytänyt
-      <a href="https://bbseuranta.fi?id=<%= @recipient.id %>" target="_blank">bbseuranta.fi</a>:tä lähettämään ilmoituksen,
+      <a href="<%= @user_link %>" target="_blank">bbseuranta.fi</a>:tä lähettämään ilmoituksen,
       <br>
       kun BB-talossa tapahtuu.
     </p>
@@ -53,7 +56,7 @@
       "
     >
       <a
-        href="https://bbseuranta.fi?id=<%= @recipient.id %>"
+        href="<%= @user_link %>"
         target="_blank"
         style="
           text-decoration: none;
