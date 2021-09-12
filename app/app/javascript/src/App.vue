@@ -28,15 +28,15 @@
         Tila:
         <span
             :style="{
-            color: hasActiveSubscription ? 'teal' : 'deep-orange',
+            color: hasActiveChannel ? 'teal' : 'initial',
           }"
         >
-          {{ hasActiveSubscription ? 'Ilmoitukset käytössä ✓' : 'Ilmoitukset ei käytössä' }}
+          {{ hasActiveChannel ? 'Ilmoitukset käytössä ✓' : 'Ilmoitukset ei käytössä' }}
         </span>
       </div>
 
       <div
-          v-if="!hasActiveSubscription"
+          v-if="!hasActiveChannel"
           class="features"
       >
         <div
@@ -59,10 +59,10 @@
       </div>
 
       <div
-          v-if="supportsWebPush"
+        v-if="supportsWebPush || hasActiveChannel"
       >
         <div
-            v-if="hasActiveSubscription"
+            v-if="hasActiveChannel"
             style="padding-bottom: 28px;"
         >
           <div
@@ -211,7 +211,7 @@
       </div>
 
       <div
-          v-else
+          v-if="!hasActiveChannel && !supportsWebPush"
           style="text-align: center;"
       >
         <div
@@ -221,13 +221,7 @@
         </div>
 
         <div
-            v-if="emailSent"
-        >
-          Kiitos! Saat vahvistusviestin mailiin.
-        </div>
-
-        <div
-            v-else
+            v-if="!emailSent"
         >
           <h3
               style="margin-bottom: 12px;"
@@ -282,8 +276,14 @@ export default {
     ...mapGetters({
       supportsWebPush: 'sw/supportsWebPush',
       hasActiveSubscription: 'sw/hasActiveSubscription',
+      hasActiveEmail: 'sw/hasActiveEmail',
       notifications: 'sw/notifications',
+      currentUser: 'sw/currentUser',
     }),
+
+    hasActiveChannel() {
+      return this.hasActiveSubscription || this.hasActiveEmail;
+    },
   },
 
   watch: {
@@ -299,6 +299,15 @@ export default {
     },
   },
 
+  async mounted() {
+    if (this.userId()) {
+      const success = await this.loadUser(this.userId());
+      if (!success) {
+        this.removeUserId();
+      }
+    }
+  },
+
   methods: {
     ...mapActions({
       subscribeToPushNotifications: 'sw/subscribeToPushNotifications',
@@ -306,14 +315,22 @@ export default {
       notify: 'notifications/notify',
       readAll: 'notifications/readAll',
       saveEmail: 'sw/saveEmail',
+      loadUser: 'sw/loadUser',
+      destroyUserById: 'sw/destroyUserById',
     }),
 
-    subscribe() {
-      this.subscribeToPushNotifications();
+    async subscribe() {
+      await this.subscribeToPushNotifications();
     },
 
-    unsubscribe() {
-      this.unsubscribePushNotification();
+    async unsubscribe() {
+      if (this.userId()) {
+        await this.destroyUserById(this.userId());
+      } else {
+        await this.unsubscribePushNotification();
+      }
+
+      this.removeUserId();
     },
 
     onNotify() {
@@ -335,10 +352,28 @@ export default {
         },
       };
 
-      await this.saveEmail(payload);
+      const success = await this.saveEmail(payload);
 
-      this.emailSent = true;
+      if (success) {
+        this.addUserId();
+      }
+
       this.email = null;
+    },
+
+    userId() {
+      const uri = window.location.search.substring(1);
+      const params = new URLSearchParams(uri);
+      const id = params.get('id');
+      return id;
+    },
+
+    addUserId() {
+      window.history.replaceState({}, document.title, `?id=${this.currentUser.id}`);
+    },
+
+    removeUserId() {
+      window.history.replaceState({}, document.title, '/');
     },
   },
 }

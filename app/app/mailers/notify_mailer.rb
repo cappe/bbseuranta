@@ -5,8 +5,8 @@ class NotifyMailer < ApplicationMailer
   #
   #   en.notify_mailer.episode_notification.subject
   #
-  def episode_notification(recipient)
-    @recipient = recipient
+  def episode_notification
+    @recipient = params[:recipient]
 
     mail to: @recipient.email,
          subject: 'Big Brotherissa tapahtuu!'

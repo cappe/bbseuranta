@@ -15,6 +15,7 @@ const supportsWebPush = () => 'PushManager' in window;
 const getters = {
     activeSubscription: s => s.activeSubscription,
     hasActiveSubscription: s => !!s.activeSubscription,
+    hasActiveEmail: s => s.currentUser && !!s.currentUser.email,
     permission: s => s.permission,
     reg: s => s.reg,
     supportsWebPush: s => supportsWebPush() && !!s.reg,
@@ -71,6 +72,23 @@ const actions = {
         }
     },
 
+    async loadUser({ commit }, id) {
+        try {
+            const r = await api.get(`users/${id}`);
+            commit('SET_CURRENT_USER', r);
+            return true;
+        } catch (e) {
+            return false;
+        }
+    },
+
+    async destroyUserById({ commit }, id) {
+        try {
+            await api.delete(`users/${id}`);
+            commit('DESTROY_CURRENT_USER');
+        } catch (e) {}
+    },
+
     async updated({ commit, dispatch }, { reg }) {
         commit('SET_REG', { reg });
     },
@@ -79,7 +97,10 @@ const actions = {
         try {
             const r = await api.post('users', payload);
             commit('SET_CURRENT_USER', r);
-        } catch (e) {}
+            return true;
+        } catch (e) {
+            return false;
+        }
     },
 
     /**

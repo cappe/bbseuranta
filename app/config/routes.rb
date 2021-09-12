@@ -7,7 +7,7 @@ Rails.application.routes.draw do
   get 'public_vapid_key', to: 'users#public_vapid_key'
   get 'find_by_endpoint', to: 'users#show'
 
-  resources :users, only: [:create, :destroy]
+  resources :users, only: [:show, :create, :destroy]
   resources :notifications, only: [:create]
 
   namespace :notifications do
