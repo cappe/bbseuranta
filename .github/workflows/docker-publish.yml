@@ -20,6 +20,7 @@ jobs:
     
     env:
       IMAGE_NAME: bbseuranta
+      RAILS_MASTER_KEY: ${{ secrets.RAILS_MASTER_KEY }}
     
     defaults:
       run:
