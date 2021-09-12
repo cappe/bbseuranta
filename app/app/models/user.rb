@@ -10,4 +10,12 @@ class User < ApplicationRecord
   has_many :notifications,
            -> { newest_first },
            as: :recipient
+
+  scope :cooldown, -> {
+    where(
+      'prev_sent_at <= ?',
+      DateTime.now - 1.hour
+    )
+      .or(where(prev_sent_at: nil))
+  }
 end

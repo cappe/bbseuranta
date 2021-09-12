@@ -1,9 +1,10 @@
 import api from '../../utils/api';
 
 const actions = {
-    async notify() {
+    async notify({ rootGetters }) {
+        const user_id = rootGetters['sw/currentUser'].id;
         try {
-            await api.post('notifications');
+            await api.post('notifications', { user_id });
         } catch (e) {}
     },
 
