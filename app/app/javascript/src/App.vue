@@ -94,9 +94,9 @@
               <button
                   @click="onNotify"
                   class="btn-large"
-                  style="margin: 24px 0;"
+                  style="margin: 24px 0; cursor: pointer;"
               >
-                Vinkkaa seuraajia
+                Lähetä ilmoitus
               </button>
 
               <div
@@ -193,7 +193,7 @@
               <button
                   @click="unsubscribe"
                   class="btn-text"
-                  style="color: red;"
+                  style="color: red; cursor: pointer;"
               >
                 Poista ilmoitukset käytöstä
               </button>
@@ -207,7 +207,7 @@
             <button
                 @click="subscribe"
                 class="btn-large"
-                style="margin-bottom: 16px;"
+                style="margin-bottom: 16px; cursor: pointer;"
             >
               Aktivoi ilmoitukset
             </button>
@@ -262,6 +262,7 @@
                 <button
                     type="submit"
                     class="btn-large"
+                    style="cursor: pointer;"
                 >
                   Tallenna
                 </button>
