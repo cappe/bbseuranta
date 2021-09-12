@@ -282,6 +282,18 @@
           </div>
         </div>
       </template>
+
+      <footer
+          style="
+            font-size: 12px;
+            max-width: 200px;
+            margin: 96px auto 48px;
+            text-align: center;
+          "
+      >
+        Haluatko lähettää palautetta? Laita mailia
+        osoitteeseen <a href="mailto:palaute@bbseuranta.fi">palaute@bbseuranta.fi</a>
+      </footer>
     </div>
   </div>
 </template>
