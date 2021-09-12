@@ -420,7 +420,7 @@ export default {
 }
 </script>
 
-<style scoped>
+<style>
 .content {
   max-width: 500px;
   margin: 0 auto;
