@@ -231,7 +231,7 @@
 
           <div>
             <form
-              @submit.prevent="onEmailSubmit"
+              @submit.prevent="subscribe"
             >
               <label>
                 Syötä sähköpostiosoitteesi:
@@ -314,22 +314,19 @@ export default {
       unsubscribePushNotification: 'sw/unsubscribePushNotification',
       notify: 'notifications/notify',
       readAll: 'notifications/readAll',
-      saveEmail: 'sw/saveEmail',
+      createUser: 'sw/createUser',
       loadUser: 'sw/loadUser',
-      destroyUserById: 'sw/destroyUserById',
+      destroyUser: 'sw/destroyUser',
     }),
 
     async subscribe() {
-      await this.subscribeToPushNotifications();
+      const subscription = await this.subscribeToPushNotifications();
+      await this.saveUser(subscription);
     },
 
     async unsubscribe() {
-      if (this.userId()) {
-        await this.destroyUserById(this.userId());
-      } else {
-        await this.unsubscribePushNotification();
-      }
-
+      await this.unsubscribePushNotification();
+      await this.destroyUser();
       this.removeUserId();
     },
 
@@ -345,19 +342,17 @@ export default {
       return date;
     },
 
-    async onEmailSubmit() {
+    async saveUser(subscription) {
+      const subs = subscription ? subscription : {};
       const payload = {
         user: {
           email: this.email,
+          ...subs,
         },
       };
 
-      const success = await this.saveEmail(payload);
-
-      if (success) {
-        this.addUserId();
-      }
-
+      const success = await this.createUser(payload);
+      if (success) this.addUserId();
       this.email = null;
     },
 

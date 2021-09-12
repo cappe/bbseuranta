@@ -82,59 +82,36 @@ const actions = {
         }
     },
 
-    async destroyUserById({ commit }, id) {
-        try {
-            await api.delete(`users/${id}`);
-            commit('DESTROY_CURRENT_USER');
-        } catch (e) {}
-    },
-
     async updated({ commit, dispatch }, { reg }) {
         commit('SET_REG', { reg });
     },
 
-    async saveEmail({ commit }, payload) {
+    /**
+     * @returns {Promise<*|null>}
+     */
+    async subscribeToPushNotifications({ dispatch }) {
         try {
-            const r = await api.post('users', payload);
-            commit('SET_CURRENT_USER', r);
-            return true;
+            const permission = await dispatch('requestPermission');
+            if (permission !== 'granted') return null;
+            const subscription = await dispatch('subscribe');
+            return subscription;
         } catch (e) {
-            return false;
+            return null;
         }
     },
 
     /**
-     * @returns {Promise<boolean>}
-     */
-    async subscribeToPushNotifications({ dispatch }) {
-        const permission = await dispatch('requestPermission');
-        if (permission !== 'granted') return false;
-
-        let success = false;
-
-        try {
-            const subscription = await dispatch('subscribe');
-            success = await dispatch('createUser', { subscription });
-        } catch (e) {}
-
-        return success;
-    },
-
-    /**
-     * @returns {Promise<boolean>}
+     * @returns {Promise<*|null>}
      */
     async unsubscribePushNotification({ dispatch }) {
-        const subscription = await dispatch('getActiveSubscription');
-        if (!subscription) return false;
-
-        let success = false;
-
         try {
-            success = await dispatch('destroyUser', { subscription });
+            const subscription = await dispatch('getActiveSubscription');
+            if (!subscription) return null;
             await dispatch('unsubscribe', { subscription });
-        } catch (e) {}
-
-        return success;
+            return subscription;
+        } catch (e) {
+            return null;
+        }
     },
 
     /**
@@ -192,17 +169,7 @@ const actions = {
     /**
      * @returns {Promise<boolean>}
      */
-    async createUser({ commit }, { subscription }) {
-        const payload = {
-            user: {
-                endpoint: subscription.endpoint,
-                expirationTime: subscription.expirationTime,
-                auth: subscription.keys.auth,
-                p256dh: subscription.keys.p256dh,
-                userAgent: navigator.userAgent,
-            },
-        };
-
+    async createUser({ commit }, payload) {
         let success = false;
 
         try {
@@ -217,15 +184,13 @@ const actions = {
     /**
      * @returns {Promise<boolean>}
      */
-    async destroyUser({ commit, getters: allGetters }, { subscription }) {
-        const { id, endpoint } = allGetters.currentUser;
-
-        if (endpoint !== subscription.endpoint) return true;
+    async destroyUser({ commit, getters: allGetters }) {
+        const { id } = allGetters.currentUser;
 
         let success = false;
 
         try {
-            await api.delete(`users/${id}?endpoint=${endpoint}`);
+            await api.delete(`users/${id}`);
             commit('DESTROY_CURRENT_USER');
             success = true;
         } catch (e) {}
