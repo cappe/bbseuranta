@@ -1,7 +1,6 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>bbseuranta.fi | Kun haluat nähdä ne mehukkaimmat hetket livenä.</title>
   <meta name="viewport" content="width=device-width,initial-scale=1">
 
   <%= csrf_meta_tags %>
@@ -20,6 +19,16 @@
     data-excluded-domains="localhost"
     defer
   ></script>
+
+  <title>bbseuranta.fi | Kun haluat nähdä ne mehukkaimmat hetket livenä.</title>
+  <meta property="og:title" content="bbseuranta.fi | Kun haluat nähdä ne mehukkaimmat hetket livenä.">
+
+  <meta name="description" content="Näe ja koe BB:n parhaat hetket livenä. Vastaanota ilmoitus, kun jotain mehukasta tapahtuu. Näitkö jotain kiinnostavaa? Vinkkaa siitä myös muille!">
+  <meta property="og:description" content="Näe ja koe BB:n parhaat hetket livenä. Vastaanota ilmoitus, kun jotain mehukasta tapahtuu. Näitkö jotain kiinnostavaa? Vinkkaa siitä myös muille!">
+
+  <meta property="og:image" content="<%= asset_path 'bell-512x512.png' %>">
+  <meta property="og:url" content="https://bbseuranta.fi">
+  <meta property="og:site_name" content="bbseuranta.fi | Kun haluat nähdä ne mehukkaimmat hetket livenä.">
 
 </head>
 <body>
