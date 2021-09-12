@@ -1,7 +1,11 @@
 class User < ApplicationRecord
   validates :endpoint,
-            presence: true,
-            uniqueness: true
+            uniqueness: true,
+            allow_nil: true
+
+  validates :email,
+            uniqueness: true,
+            allow_nil: true
 
   has_many :notifications,
            -> { newest_first },

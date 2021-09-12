@@ -17,7 +17,17 @@ class UsersController < ApplicationController
     user = User.new(user_params)
 
     if user.save
-      Initial.with(lang: :fi).deliver(user)
+      delivery_method = nil
+
+      delivery_method = :webpush if user.endpoint
+      delivery_method = :email if user.email
+
+      Initial
+        .with(
+          lang: :fi,
+          delivery_method: delivery_method
+        )
+        .deliver_later(user)
 
       render json: { data: { user: user, notifications: [] } }
     else
@@ -46,6 +56,7 @@ class UsersController < ApplicationController
 
     def user_params
       params.require(:user).permit(
+        :email,
         :endpoint,
         :auth,
         :p256dh,

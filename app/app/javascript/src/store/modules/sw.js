@@ -18,6 +18,7 @@ const getters = {
     permission: s => s.permission,
     reg: s => s.reg,
     supportsWebPush: s => supportsWebPush() && !!s.reg,
+    // supportsWebPush: s => false,
     currentUser: s => s.currentUser,
     notifications: s => s.notifications,
 };
@@ -72,6 +73,13 @@ const actions = {
 
     async updated({ commit, dispatch }, { reg }) {
         commit('SET_REG', { reg });
+    },
+
+    async saveEmail({ commit }, payload) {
+        try {
+            const r = await api.post('users', payload);
+            commit('SET_CURRENT_USER', r);
+        } catch (e) {}
     },
 
     /**

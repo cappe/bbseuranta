@@ -82,4 +82,14 @@ Rails.application.configure do
   config.web_console.allowed_ips = Socket.ip_address_list.reduce([]) do |res, addrinfo|
     addrinfo.ipv4? ? res << IPAddr.new(addrinfo.ip_address).mask(24) : res
   end
+
+  config.action_mailer.delivery_method = :smtp
+  config.action_mailer.smtp_settings = {
+    :authentication => :plain,
+    :address => "smtp.eu.mailgun.org",
+    :port => 587,
+    :domain => "mail.bbseuranta.fi",
+    :user_name => Rails.application.credentials.dig(:mailgun, :user_name),
+    :password => Rails.application.credentials.dig(:mailgun, :password),
+  }
 end

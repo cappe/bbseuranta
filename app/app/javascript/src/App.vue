@@ -11,23 +11,23 @@
       </div>
 
       <h1
-        style="margin-bottom: 0; letter-spacing: 4px;"
+          style="margin-bottom: 0; letter-spacing: 4px;"
       >
         BB 24/7 seuranta
       </h1>
 
       <h2
-        style="margin-top: 4px;"
+          style="margin-top: 4px;"
       >
         Kun haluat nähdä ne mehukkaimmat hetket livenä.
       </h2>
 
       <div
-        style="text-align: center; margin: 36px 0 24px;"
+          style="text-align: center; margin: 36px 0 24px;"
       >
         Tila:
         <span
-          :style="{
+            :style="{
             color: hasActiveSubscription ? 'teal' : 'deep-orange',
           }"
         >
@@ -165,8 +165,8 @@
               </template>
 
               <div
-                v-else
-                style="font-style: italic;"
+                  v-else
+                  style="font-style: italic;"
               >
                 Ei ilmoituksia.
               </div>
@@ -203,7 +203,7 @@
           </button>
 
           <div
-            style="font-size: 12px;"
+              style="font-size: 12px;"
           >
             Selain kysyy sinulta vielä vahvistusta.
           </div>
@@ -212,9 +212,58 @@
 
       <div
           v-else
-          style="text-align: center; color: red;"
+          style="text-align: center;"
       >
-        Valitettavasti laitteesi tai selaimesi ei tue ilmoituksia.
+        <div
+            style="color: red; margin-bottom: 24px;"
+        >
+          Valitettavasti laitteesi tai selaimesi ei tue push-ilmoituksia.
+        </div>
+
+        <div
+            v-if="emailSent"
+        >
+          Kiitos! Saat vahvistusviestin mailiin.
+        </div>
+
+        <div
+            v-else
+        >
+          <h3
+              style="margin-bottom: 12px;"
+          >
+            Vastaanota ilmoitukset sähköpostiin
+          </h3>
+
+          <div>
+            <form
+              @submit.prevent="onEmailSubmit"
+            >
+              <label>
+                Syötä sähköpostiosoitteesi:
+
+                <div
+                    style="margin: 6px 0 12px;"
+                >
+                  <input
+                      v-model="email"
+                      style="
+                      padding: 8px;
+                      min-width: 260px;
+                    "
+                  >
+                </div>
+              </label>
+
+              <button
+                  type="submit"
+                  class="btn-large"
+              >
+                Tallenna
+              </button>
+            </form>
+          </div>
+        </div>
       </div>
     </div>
   </div>
@@ -224,6 +273,11 @@
 import { mapGetters, mapActions } from 'vuex';
 
 export default {
+  data: () => ({
+    email: null,
+    emailSent: false,
+  }),
+
   computed: {
     ...mapGetters({
       supportsWebPush: 'sw/supportsWebPush',
@@ -251,6 +305,7 @@ export default {
       unsubscribePushNotification: 'sw/unsubscribePushNotification',
       notify: 'notifications/notify',
       readAll: 'notifications/readAll',
+      saveEmail: 'sw/saveEmail',
     }),
 
     subscribe() {
@@ -271,7 +326,20 @@ export default {
       date = date.replace(/\,/g, '');
       date = date.replace(/\//g, '.');
       return date;
-    }
+    },
+
+    async onEmailSubmit() {
+      const payload = {
+        user: {
+          email: this.email,
+        },
+      };
+
+      await this.saveEmail(payload);
+
+      this.emailSent = true;
+      this.email = null;
+    },
   },
 }
 </script>
