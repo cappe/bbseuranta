@@ -29,12 +29,9 @@ gem 'bcrypt', '~> 3.1.7'
 gem 'bootsnap', '>= 1.4.4', require: false
 gem 'sidekiq'
 gem 'sidekiq-status'
-gem 'devise'
 gem 'jsonapi-serializer'
-gem 'httparty'
 gem 'noticed'
 gem 'serviceworker-rails'
-gem 'rack-cors'
 gem 'webpush'
 
 group :development, :test do
