@@ -2,7 +2,7 @@
   <div id="app">
     <div class="content">
       <div
-          style="text-align: center; margin-top: 42px; margin-bottom: 32px;"
+          style="text-align: center; margin-top: 42px; margin-bottom: 32px; height: 64px;"
       >
         <img
             src="bell-96x96.png"
@@ -23,53 +23,63 @@
       </h2>
 
       <div
-          style="text-align: center; margin: 36px 0 24px;"
+          v-if="loading"
+          style="text-align: center; margin-top: 48px;"
       >
-        Tila:
-        <span
-            :style="{
+        <div class="lds-dual-ring" />
+      </div>
+
+      <template
+        v-else
+      >
+        <div
+            style="text-align: center; margin: 36px 0 24px;"
+        >
+          Tila:
+          <span
+              :style="{
             color: hasActiveChannel ? 'teal' : 'initial',
           }"
-        >
+          >
           {{ hasActiveChannel ? 'Ilmoitukset käytössä ✓' : 'Ilmoitukset ei käytössä' }}
         </span>
-      </div>
-
-      <div
-          v-if="!hasActiveChannel"
-          class="features"
-      >
-        <div
-            class="feature"
-        >
-          <div>
-            Vastaanota ilmoitus, kun talossa tapahtuu.
-          </div>
         </div>
 
-        <hr>
-
         <div
-            class="feature"
-        >
-          <div>
-            Vinkkaa muita, kun talossa tapahtuu.
-          </div>
-        </div>
-      </div>
-
-      <div
-        v-if="supportsWebPush || hasActiveChannel"
-      >
-        <div
-            v-if="hasActiveChannel"
-            style="padding-bottom: 28px;"
+            v-if="!hasActiveChannel"
+            class="features"
         >
           <div
-              style="text-align: center; margin-top: 28px;"
+              class="feature"
           >
-            <p
-                style="
+            <div>
+              Vastaanota ilmoitus, kun talossa tapahtuu.
+            </div>
+          </div>
+
+          <hr>
+
+          <div
+              class="feature"
+          >
+            <div>
+              Vinkkaa muita, kun talossa tapahtuu.
+            </div>
+          </div>
+        </div>
+
+        <div
+            v-if="supportsWebPush || hasActiveChannel"
+        >
+          <div
+              v-if="hasActiveChannel"
+              style="padding-bottom: 28px;"
+          >
+            <div
+                style="text-align: center; margin-top: 28px;"
+            >
+              <p
+                  style="
                 text-transform: uppercase;
                 font-size: 14px;
                 font-weight: bold;
@@ -77,188 +87,189 @@
                 max-width: 200px;
                 margin: 0 auto;
               "
-            >
-              Tapahtuuko BB:ssä? Vinkkaa siitä muille:
-            </p>
-
-            <button
-                @click="onNotify"
-                class="btn-large"
-                style="margin: 24px 0;"
-            >
-              Vinkkaa seuraajia
-            </button>
-
-            <div
-                style="max-width: 200px; margin: 0 auto;"
-            >
-              Järjestelmässä on spämmiesto, joten käytäthän tätä harkiten.
-            </div>
-          </div>
-
-          <hr
-              style="margin: 48px 0;"
-          >
-
-          <div
-              style="text-align: center;"
-          >
-            <h3
-                style="margin-top: 0; margin-bottom: 12px;"
-            >
-              Aiemmat ilmoitukset
-            </h3>
-
-            <div
-                style="font-size: 12px; margin-bottom: 20px;"
-            >
-              (uusin ensin)
-            </div>
-
-            <div
-                class="notifications"
-            >
-              <template
-                  v-if="notifications.length > 0"
               >
-                <div
-                    v-for="(notification, i) in notifications"
-                    :key="i"
-                    class="notification"
-                    :class="{
+                Tapahtuuko BB:ssä? Vinkkaa siitä muille:
+              </p>
+
+              <button
+                  @click="onNotify"
+                  class="btn-large"
+                  style="margin: 24px 0;"
+              >
+                Vinkkaa seuraajia
+              </button>
+
+              <div
+                  style="max-width: 200px; margin: 0 auto;"
+              >
+                Järjestelmässä on spämmiesto, joten käytäthän tätä harkiten.
+              </div>
+            </div>
+
+            <hr
+                style="margin: 48px 0;"
+            >
+
+            <div
+                style="text-align: center;"
+            >
+              <h3
+                  style="margin-top: 0; margin-bottom: 12px;"
+              >
+                Aiemmat ilmoitukset
+              </h3>
+
+              <div
+                  style="font-size: 12px; margin-bottom: 20px;"
+              >
+                (uusin ensin)
+              </div>
+
+              <div
+                  class="notifications"
+              >
+                <template
+                    v-if="notifications.length > 0"
+                >
+                  <div
+                      v-for="(notification, i) in notifications"
+                      :key="i"
+                      class="notification"
+                      :class="{
                     notification: true,
                     unread: notification.read_at === null
                   }"
+                  >
+                    <table>
+                      <tbody>
+                      <tr>
+                        <th
+                            style="text-align: left;"
+                        >
+                          Vinkki lähetetty
+                        </th>
+
+                        <td
+                            style="padding-left: 16px;"
+                        >
+                          {{ formatDateTime(notification.created_at) }}
+                        </td>
+                      </tr>
+
+                      <tr>
+                        <th
+                            style="text-align: left;"
+                        >
+                          Nähnyt
+                        </th>
+
+                        <td
+                            style="padding-left: 16px;"
+                        >
+                          {{ formatDateTime(notification.read_at) || '—' }}
+                        </td>
+                      </tr>
+                      </tbody>
+                    </table>
+                  </div>
+                </template>
+
+                <div
+                    v-else
+                    style="font-style: italic;"
                 >
-                  <table>
-                    <tbody>
-                    <tr>
-                      <th
-                          style="text-align: left;"
-                      >
-                        Vinkki lähetetty
-                      </th>
-
-                      <td
-                          style="padding-left: 16px;"
-                      >
-                        {{ formatDateTime(notification.created_at) }}
-                      </td>
-                    </tr>
-
-                    <tr>
-                      <th
-                          style="text-align: left;"
-                      >
-                        Nähnyt
-                      </th>
-
-                      <td
-                          style="padding-left: 16px;"
-                      >
-                        {{ formatDateTime(notification.read_at) || '—' }}
-                      </td>
-                    </tr>
-                    </tbody>
-                  </table>
+                  Ei ilmoituksia.
                 </div>
-              </template>
-
-              <div
-                  v-else
-                  style="font-style: italic;"
-              >
-                Ei ilmoituksia.
               </div>
+            </div>
+
+            <hr
+                style="margin: 48px 0;"
+            >
+
+            <div
+                style="text-align: center; margin: 24px 0;"
+            >
+              <button
+                  @click="unsubscribe"
+                  class="btn-text"
+                  style="color: red;"
+              >
+                Poista ilmoitukset käytöstä
+              </button>
             </div>
           </div>
 
-          <hr
-              style="margin: 48px 0;"
-          >
-
           <div
-              style="text-align: center; margin: 24px 0;"
+              v-else
+              style="text-align: center;"
           >
             <button
-                @click="unsubscribe"
-                class="btn-text"
-                style="color: red;"
+                @click="subscribe"
+                class="btn-large"
+                style="margin-bottom: 16px;"
             >
-              Poista ilmoitukset käytöstä
+              Aktivoi ilmoitukset
             </button>
+
+            <div
+                style="font-size: 12px;"
+            >
+              Selain kysyy sinulta vielä vahvistusta.
+            </div>
           </div>
         </div>
 
         <div
-            v-else
+            v-if="!hasActiveChannel && !supportsWebPush"
             style="text-align: center;"
         >
-          <button
-              @click="subscribe"
-              class="btn-large"
-              style="margin-bottom: 16px;"
+          <div
+              style="color: red; margin-bottom: 24px;"
           >
-            Aktivoi ilmoitukset
-          </button>
+            Valitettavasti laitteesi tai selaimesi ei tue push-ilmoituksia.
+          </div>
 
           <div
-              style="font-size: 12px;"
+              v-if="!emailSent"
           >
-            Selain kysyy sinulta vielä vahvistusta.
-          </div>
-        </div>
-      </div>
-
-      <div
-          v-if="!hasActiveChannel && !supportsWebPush"
-          style="text-align: center;"
-      >
-        <div
-            style="color: red; margin-bottom: 24px;"
-        >
-          Valitettavasti laitteesi tai selaimesi ei tue push-ilmoituksia.
-        </div>
-
-        <div
-            v-if="!emailSent"
-        >
-          <h3
-              style="margin-bottom: 12px;"
-          >
-            Vastaanota ilmoitukset sähköpostiin
-          </h3>
-
-          <div>
-            <form
-              @submit.prevent="subscribe"
+            <h3
+                style="margin-bottom: 12px;"
             >
-              <label>
-                Syötä sähköpostiosoitteesi:
+              Vastaanota ilmoitukset sähköpostiin
+            </h3>
 
-                <div
-                    style="margin: 6px 0 12px;"
-                >
-                  <input
-                      v-model="email"
-                      style="
+            <div>
+              <form
+                  @submit.prevent="subscribe"
+              >
+                <label>
+                  Syötä sähköpostiosoitteesi:
+
+                  <div
+                      style="margin: 6px 0 12px;"
+                  >
+                    <input
+                        v-model="email"
+                        style="
                       padding: 8px;
                       min-width: 260px;
                     "
-                  >
-                </div>
-              </label>
+                    >
+                  </div>
+                </label>
 
-              <button
-                  type="submit"
-                  class="btn-large"
-              >
-                Tallenna
-              </button>
-            </form>
+                <button
+                    type="submit"
+                    class="btn-large"
+                >
+                  Tallenna
+                </button>
+              </form>
+            </div>
           </div>
         </div>
-      </div>
+      </template>
     </div>
   </div>
 </template>
@@ -270,6 +281,7 @@ export default {
   data: () => ({
     email: null,
     emailSent: false,
+    loading: true,
   }),
 
   computed: {
@@ -306,6 +318,12 @@ export default {
         this.removeUserId();
       }
     }
+
+    this.$nextTick(() => {
+      setTimeout(() => {
+        this.loading = false;
+      }, 500);
+    });
   },
 
   methods: {
@@ -455,4 +473,30 @@ button.btn-text {
 .notification.unread {
   background-color: lightblue;
 }
+
+.lds-dual-ring {
+  display: inline-block;
+  width: 80px;
+  height: 80px;
+}
+.lds-dual-ring:after {
+  content: " ";
+  display: block;
+  width: 32px;
+  height: 32px;
+  margin: 8px;
+  border-radius: 50%;
+  border: 3px solid orange;
+  border-color: orange transparent orange transparent;
+  animation: lds-dual-ring 1.2s linear infinite;
+}
+@keyframes lds-dual-ring {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
 </style>
