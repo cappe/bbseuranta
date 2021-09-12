@@ -16,17 +16,20 @@ RUN apt-get update -yqq && apt-get install -yqq --no-install-recommends \
 
 WORKDIR /app
 
-COPY Gemfile /app/Gemfile
-COPY Gemfile.lock /app/Gemfile.lock
+# Backend packages
+COPY Gemfile* ./
+RUN bundle config --global frozen 1 \
+ && bundle install --jobs 5 --retry 3 \
+ # Remove unneeded files (cached *.gem, *.o, *.c)
+ && rm -rf /usr/local/bundle/cache/*.gem \
+ && find /usr/local/bundle/gems/ -name "*.c" -delete \
+ && find /usr/local/bundle/gems/ -name "*.o" -delete
 
+# Frontend packages
+COPY package.json yarn.lock ./
 RUN yarn install
-RUN bundle install --jobs 5
 
-# Add a script to be executed every time the container starts.
-COPY docker/entrypoint.sh /usr/bin/
-RUN chmod +x /usr/bin/entrypoint.sh
-ENTRYPOINT ["entrypoint.sh"]
-EXPOSE 3000
+# Add the Rails app
+COPY . .
 
-# Configure the main process to run when running the image
-CMD ["rails", "server", "-b", "0.0.0.0"]
+RUN chmod +x ./docker/*.sh
