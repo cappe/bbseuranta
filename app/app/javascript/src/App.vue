@@ -341,9 +341,25 @@ export default {
     async subscribe() {
       const subscription = await this.subscribeToPushNotifications();
       await this.saveUser(subscription);
+
+      if (this.hasActiveSubscription) {
+        window.fathom.trackGoal('BWB7HYCE', 0); // Subscribe to Webpush
+      }
+
+      if (this.hasActiveEmail) {
+        window.fathom.trackGoal('JOZLR9CU', 0); // Subscribe to Email
+      }
     },
 
     async unsubscribe() {
+      if (this.hasActiveSubscription) {
+        window.fathom.trackGoal('YAU4EH9R', 0); // Unsubscribe from Webpush
+      }
+
+      if (this.hasActiveEmail) {
+        window.fathom.trackGoal('IBNDHEWD', 0); // Unsubscribe from Email
+      }
+
       await this.unsubscribePushNotification();
       await this.destroyUser();
       this.removeUserId();
@@ -351,6 +367,7 @@ export default {
 
     onNotify() {
       this.notify();
+      window.fathom.trackGoal('8ENS1ZHH', 0);
     },
 
     formatDateTime(timestamp) {
