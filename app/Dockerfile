@@ -33,3 +33,5 @@ RUN yarn install
 COPY . .
 
 RUN chmod +x ./docker/*.sh
+
+RUN RAILS_ENV=production bundle exec rake assets:precompile
