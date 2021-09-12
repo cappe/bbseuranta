@@ -342,14 +342,24 @@ export default {
       return date;
     },
 
-    async saveUser(subscription) {
-      const subs = subscription ? subscription : {};
-      const payload = {
+    async saveUser(subscription = null) {
+      let payload = {
         user: {
           email: this.email,
-          ...subs,
         },
       };
+
+      if (subscription) {
+        payload = {
+          user: {
+            ...payload.user,
+            endpoint: subscription.endpoint,
+            expirationTime: subscription.expirationTime,
+            auth: subscription.keys.auth,
+            p256dh: subscription.keys.p256dh,
+          }
+        }
+      }
 
       const success = await this.createUser(payload);
       if (success) this.addUserId();
