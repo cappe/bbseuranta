@@ -94,9 +94,12 @@
               <button
                   @click="onNotify"
                   class="btn-large"
+                  :class="{
+                    disabled: notified
+                  }"
                   style="margin: 24px 0; cursor: pointer;"
               >
-                Lähetä ilmoitus
+                 {{ notified ? 'Ilmoitus lähetetty, fanit kiittää!' : 'Lähetä ilmoitus' }}
               </button>
 
               <div
@@ -283,6 +286,7 @@ export default {
     email: null,
     emailSent: false,
     loading: true,
+    notified: false,
   }),
 
   computed: {
@@ -365,8 +369,9 @@ export default {
       this.removeUserId();
     },
 
-    onNotify() {
-      this.notify();
+    async onNotify() {
+      await this.notify();
+      this.notified = true;
       window.fathom.trackGoal('8ENS1ZHH', 0);
     },
 
@@ -467,6 +472,13 @@ button.btn-large {
   background-color: teal;
   border: none;
   color: white;
+}
+
+button.disabled {
+  pointer-events: none;
+  background: transparent;
+  color: teal;
+  border: 1px solid teal;
 }
 
 button.btn-text {
