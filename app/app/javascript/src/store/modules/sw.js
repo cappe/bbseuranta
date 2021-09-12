@@ -56,8 +56,7 @@ const actions = {
      */
     async validateSubscription({ commit }, { subscription }) {
         try {
-            const r = await api.get(`find_by_endpoint?endpoint=${subscription.endpoint}`);
-            commit('SET_CURRENT_USER', r);
+            await api.get(`find_by_endpoint?endpoint=${subscription.endpoint}`);
             return true;
         } catch (e) {
             if (e.httpStatus === 404) {
@@ -66,6 +65,7 @@ const actions = {
                  * another device. Hence, we need to unsubscribe from it.
                  */
                 try { await subscription.unsubscribe(); } catch (k) {}
+                commit('DESTROY_CURRENT_USER');
             }
 
             return false;
