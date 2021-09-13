@@ -54,9 +54,14 @@ const actions = {
      * @param subscription
      * @returns {Promise<boolean>}
      */
-    async validateSubscription({ commit }, { subscription }) {
+    async validateSubscription({ commit, getters: allGetters }, { subscription }) {
         try {
-            await api.get(`find_by_endpoint?endpoint=${subscription.endpoint}`);
+            const r = await api.get(`find_by_endpoint?endpoint=${subscription.endpoint}`);
+
+            if (!allGetters.currentUser) {
+                commit('SET_CURRENT_USER', r);
+            }
+
             return true;
         } catch (e) {
             if (e.httpStatus === 404) {
